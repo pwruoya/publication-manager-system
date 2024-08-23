@@ -12,12 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
     $author_id = $_POST['author_id'];
     $editor_id = $_POST['editor_id'];
-    $submitted_date = $_POST['submitted_date'];
+    $submitted_date = $_POST['submitted_date'] ?: date('Y-m-d'); // Use submitted date or current date
     $due_date = $_POST['due_date'];
     $remarks = $_POST['remarks'];
 
-    $stmt = $conn->prepare("INSERT INTO manuscripts (title, author_id, editor_id, submitted_date, due_date, remarks) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssss", $title, $author_id, $editor_id, $submitted_date, $due_date, $remarks);
+    $stmt = $conn->prepare("INSERT INTO manuscripts (title, author_id, editor_id, submitted_date, due_date, remarks, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $submission_date = date('Y-m-d'); // Automatically set submission date
+    $stmt->bind_param("sssssss", $title, $author_id, $editor_id, $submitted_date, $due_date, $remarks, $submission_date);
 
     if ($stmt->execute()) {
         $success = "Manuscript submitted successfully!";
@@ -26,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
