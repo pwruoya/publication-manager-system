@@ -12,12 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $role = $_POST['role'];
 
     $hash_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $stmt = $conn->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $name, $email, $hash_password, $role);
+    $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $name, $email, $hash_password);
 
     if ($stmt->execute()) {
         header("Location: login.php");
@@ -36,6 +35,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .card {
+            padding: 20px;
+        }
+        
+        footer {
+            background-color: #f8f9fa;
+            padding: 10px 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -43,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="card">
             <h2 class="text-center">Register</h2>
             <?php if (isset($error)): ?>
-                <div class="alert alert-danger"><?php echo $error; ?></div>
+                <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
 
             <form method="POST">
@@ -59,14 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password" required>
                 </div>
-                <div class="mb-3">
-                    <label for="role" class="form-label">Role</label>
-                    <select name="role" id="role" class="form-control">
-                        <option value="Author">Author</option>
-                        <option value="Editor">Editor</option>
-                        <option value="Publisher">Publisher</option>
-                    </select>
-                </div>
                 <button type="submit" class="btn btn-primary w-100">Register</button>
                 <p class="mt-3">Already Have an Account? <a href="login.php">Login</a></p>
             </form>
@@ -78,7 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             &copy; 2024 Publication System. All rights reserved.
         </div>
     </footer>
-
 </body>
 
 </html>
