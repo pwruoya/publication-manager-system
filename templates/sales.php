@@ -11,6 +11,17 @@ include 'db.php';
 // Initialize message variable
 $message = '';
 
+// Fetch manuscripts for the dropdown
+$manuscripts = [];
+$manuscript_query = "SELECT manuscript_id, title FROM manuscripts";
+$result = $conn->query($manuscript_query);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $manuscripts[] = $row;
+    }
+}
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer_name = $_POST['customer_name'];
@@ -18,14 +29,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $quantity = $_POST['quantity'];
     $order_date = $_POST['order_date'];
     $revenue = $_POST['revenue'];
+    $manuscript_id = isset($_POST['manuscript_id']) ? $_POST['manuscript_id'] : null;
 
-    $stmt = $conn->prepare("INSERT INTO sales (customer_name, contact_info, quantity, order_date, revenue) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssids", $customer_name, $contact_info, $quantity, $order_date, $revenue);
-    
-    if ($stmt->execute()) {
-        $message = '<div class="alert alert-success" role="alert">Sale record added successfully.</div>';
+    // Validate manuscript_id
+    if ($manuscript_id === null || !is_numeric($manuscript_id)) {
+        $message = '<div class="alert alert-warning" role="alert">Please select a valid manuscript.</div>';
     } else {
-        $message = '<div class="alert alert-danger" role="alert">Error: ' . $stmt->error . '</div>';
+        $stmt = $conn->prepare("INSERT INTO sales (customer_name, contact_info, quantity, order_date, revenue, manuscript_id) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssidsi", $customer_name, $contact_info, $quantity, $order_date, $revenue, $manuscript_id);
+        
+        if ($stmt->execute()) {
+            $message = '<div class="alert alert-success" role="alert">Sale record added successfully.</div>';
+        } else {
+            $message = '<div class="alert alert-danger" role="alert">Error: ' . $stmt->error . '</div>';
+        }
     }
 }
 ?>
@@ -74,6 +91,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="card-body">
                 <form action="sales.php" method="post">
+                    <div class="mb-3">
+                        <label for="manuscript_id" class="form-label">Select Manuscript</label>
+                        <select class="form-select" id="manuscript_id" name="manuscript_id" required>
+                            <option value="">Select a manuscript</option>
+                            <?php foreach ($manuscripts as $manuscript): ?>
+                                <option value="<?php echo htmlspecialchars($manuscript['manuscript_id']); ?>">
+                                    <?php echo htmlspecialchars($manuscript['title']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label for="customer_name" class="form-label">Customer Name</label>
                         <input type="text" class="form-control" id="customer_name" name="customer_name" required>
