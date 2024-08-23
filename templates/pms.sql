@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 23, 2024 at 09:08 PM
+-- Generation Time: Aug 24, 2024 at 12:55 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,6 +41,37 @@ CREATE TABLE `books` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `contributor`
+--
+
+CREATE TABLE `contributor` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `contact_info` text NOT NULL,
+  `role` enum('Author','Editor','Publisher') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `contributor`
+--
+
+INSERT INTO `contributor` (`id`, `name`, `email`, `contact_info`, `role`) VALUES
+(1, 'Martin Luther', 'luther@gmail.com', '254 7165262534', 'Author'),
+(2, 'lois lane', 'lane@gmail.com', '254 546764324', 'Editor'),
+(3, 'Clark Kent', 'kent@gmail.com', '254 765123', 'Publisher'),
+(4, 'peptang', 'pep@gmail.com', '254 7890786', 'Author'),
+(5, 'Rashford', 'rashy9@gmail.com', '254 7165262534', 'Author'),
+(6, 'Ken Walibora', 'walibora@gmail.com', '254 780765324', 'Author'),
+(7, 'Bruce Wayne', 'wayne@gmail.com', '254 75645364', 'Editor'),
+(8, 'Dianna Prince', 'diana@gmail.com', '254 65776534', 'Publisher'),
+(9, 'Steve Rodgers', 'steve@gmail.com', '254 787654132', 'Author'),
+(10, 'Tony Stark', 'stark@gmail.com', '254712635463', 'Editor'),
+(11, 'Bruce Banner', 'banner@gmail.com', '254 765987546', 'Publisher');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `customers`
 --
 
@@ -59,18 +90,26 @@ CREATE TABLE `customers` (
 CREATE TABLE `manuscripts` (
   `manuscript_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `submission_date` date NOT NULL,
+  `submission_date` date DEFAULT NULL,
   `status` enum('Pending','Reviewed','Published') DEFAULT 'Pending',
   `author_id` int(11) DEFAULT NULL,
-  `editor_id` int(11) DEFAULT NULL
+  `editor_id` int(11) DEFAULT NULL,
+  `submitted_date` date DEFAULT NULL,
+  `due_date` date DEFAULT NULL,
+  `remarks` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `manuscripts`
 --
 
-INSERT INTO `manuscripts` (`manuscript_id`, `title`, `submission_date`, `status`, `author_id`, `editor_id`) VALUES
-(1, 'The River Jordan', '2024-08-22', 'Pending', 3, NULL);
+INSERT INTO `manuscripts` (`manuscript_id`, `title`, `submission_date`, `status`, `author_id`, `editor_id`, `submitted_date`, `due_date`, `remarks`) VALUES
+(5, 'The River Between', '0000-00-00', 'Reviewed', 4, 2, '2024-08-24', '2024-08-31', 'Seems nice'),
+(6, 'The Tropics', '0000-00-00', '', 4, 2, '2024-08-24', '2024-09-01', 'Very long'),
+(11, 'Nike For Today', '2024-08-24', '', 1, 2, '2024-08-24', '2024-08-30', 'now'),
+(12, 'Nike For Today', '2024-08-24', 'Pending', 1, 2, '2024-08-24', '2024-08-30', 'now'),
+(13, 'Nike For Today', '2024-08-24', 'Pending', 1, 2, '2024-08-24', '2024-08-30', 'now'),
+(19, 'The Avengers Initiative', '2024-08-24', 'Pending', 9, 10, '2024-08-24', '2024-08-31', 'okay ');
 
 -- --------------------------------------------------------
 
@@ -168,6 +207,13 @@ ALTER TABLE `books`
   ADD KEY `publisher_id` (`publisher_id`);
 
 --
+-- Indexes for table `contributor`
+--
+ALTER TABLE `contributor`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
 -- Indexes for table `customers`
 --
 ALTER TABLE `customers`
@@ -178,8 +224,8 @@ ALTER TABLE `customers`
 --
 ALTER TABLE `manuscripts`
   ADD PRIMARY KEY (`manuscript_id`),
-  ADD KEY `author_id` (`author_id`),
-  ADD KEY `editor_id` (`editor_id`);
+  ADD KEY `fk_author` (`author_id`),
+  ADD KEY `fk_editor` (`editor_id`);
 
 --
 -- Indexes for table `orders`
@@ -229,6 +275,12 @@ ALTER TABLE `books`
   MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `contributor`
+--
+ALTER TABLE `contributor`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
@@ -238,7 +290,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `manuscripts`
 --
 ALTER TABLE `manuscripts`
-  MODIFY `manuscript_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `manuscript_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -286,8 +338,8 @@ ALTER TABLE `books`
 -- Constraints for table `manuscripts`
 --
 ALTER TABLE `manuscripts`
-  ADD CONSTRAINT `manuscripts_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `manuscripts_ibfk_2` FOREIGN KEY (`editor_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_author` FOREIGN KEY (`author_id`) REFERENCES `contributor` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_editor` FOREIGN KEY (`editor_id`) REFERENCES `contributor` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `orders`

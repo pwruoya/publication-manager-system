@@ -25,6 +25,9 @@
           <a class="nav-link" href="submit_manuscript.php">Submit Manuscript</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="view_manuscript.php">View Manuscript</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="sales.php">Sales</a>
         </li>
         <li class="nav-item">
