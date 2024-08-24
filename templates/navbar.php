@@ -30,6 +30,10 @@
     .navbar-nav .nav-link.btn:hover {
       background-color: #c82333; /* Darker red for hover */
     }
+    .navbar-nav.mx-auto {
+      flex-grow: 1;
+      justify-content: center; /* Center the nav items */
+    }
   </style>
 </head>
 
@@ -40,7 +44,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mr-auto">
+      <ul class="navbar-nav mx-auto"> <!-- Center align the navbar items -->
         <li class="nav-item">
           <a class="nav-link" href="add_contributor.php">Add Contributor</a>
         </li>
@@ -57,7 +61,7 @@
           <a class="nav-link" href="order.php">Order</a>
         </li>
       </ul>
-      <ul class="navbar-nav ml-auto">
+      <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link btn btn-danger text-white" href="logout.php">Logout</a>
         </li>
