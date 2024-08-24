@@ -13,15 +13,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $hash_password = password_hash($password, PASSWORD_DEFAULT);
-
-    $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $name, $email, $hash_password);
-
-    if ($stmt->execute()) {
-        header("Location: login.php");
+    // Check password requirements
+    if (strlen($password) <= 6) {
+        $error = "Password must be longer than 6 characters.";
+    } elseif (!preg_match('/\d/', $password)) {
+        $error = "Password must contain at least one number.";
+    } elseif (strcasecmp($password, $name) === 0) {
+        $error = "Password cannot be the same as the name.";
     } else {
-        $error = "Error registering";
+        $hash_password = password_hash($password, PASSWORD_DEFAULT);
+
+        $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $name, $email, $hash_password);
+
+        if ($stmt->execute()) {
+            header("Location: login.php");
+        } else {
+            $error = "Error registering";
+        }
     }
 }
 ?>
@@ -50,6 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: #f8f9fa;
             padding: 10px 0;
         }
+
+        .password-requirements {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6c757d;
+        }
     </style>
 </head>
 
@@ -73,6 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" placeholder="Enter Password" id="password" name="password" required>
+                    <div class="password-requirements">
+                        <p>Password must:</p>
+                        <ul>
+                            <li>Be longer than 6 characters</li>
+                            <li>Contain at least one number</li>
+                            <li>Not be the same as your name</li>
+                        </ul>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Register</button>
                 <p class="mt-3">Already Have an Account? <a href="login.php">Login</a></p>
