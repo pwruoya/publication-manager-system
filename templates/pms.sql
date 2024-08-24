@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 24, 2024 at 12:55 AM
+-- Generation Time: Aug 24, 2024 at 08:30 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -49,25 +49,9 @@ CREATE TABLE `contributor` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `contact_info` text NOT NULL,
-  `role` enum('Author','Editor','Publisher') NOT NULL
+  `role` enum('Author','Editor','Publisher') NOT NULL,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `contributor`
---
-
-INSERT INTO `contributor` (`id`, `name`, `email`, `contact_info`, `role`) VALUES
-(1, 'Martin Luther', 'luther@gmail.com', '254 7165262534', 'Author'),
-(2, 'lois lane', 'lane@gmail.com', '254 546764324', 'Editor'),
-(3, 'Clark Kent', 'kent@gmail.com', '254 765123', 'Publisher'),
-(4, 'peptang', 'pep@gmail.com', '254 7890786', 'Author'),
-(5, 'Rashford', 'rashy9@gmail.com', '254 7165262534', 'Author'),
-(6, 'Ken Walibora', 'walibora@gmail.com', '254 780765324', 'Author'),
-(7, 'Bruce Wayne', 'wayne@gmail.com', '254 75645364', 'Editor'),
-(8, 'Dianna Prince', 'diana@gmail.com', '254 65776534', 'Publisher'),
-(9, 'Steve Rodgers', 'steve@gmail.com', '254 787654132', 'Author'),
-(10, 'Tony Stark', 'stark@gmail.com', '254712635463', 'Editor'),
-(11, 'Bruce Banner', 'banner@gmail.com', '254 765987546', 'Publisher');
 
 -- --------------------------------------------------------
 
@@ -96,20 +80,10 @@ CREATE TABLE `manuscripts` (
   `editor_id` int(11) DEFAULT NULL,
   `submitted_date` date DEFAULT NULL,
   `due_date` date DEFAULT NULL,
-  `remarks` text DEFAULT NULL
+  `remarks` text DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `submitted_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `manuscripts`
---
-
-INSERT INTO `manuscripts` (`manuscript_id`, `title`, `submission_date`, `status`, `author_id`, `editor_id`, `submitted_date`, `due_date`, `remarks`) VALUES
-(5, 'The River Between', '0000-00-00', 'Reviewed', 4, 2, '2024-08-24', '2024-08-31', 'Seems nice'),
-(6, 'The Tropics', '0000-00-00', '', 4, 2, '2024-08-24', '2024-09-01', 'Very long'),
-(11, 'Nike For Today', '2024-08-24', '', 1, 2, '2024-08-24', '2024-08-30', 'now'),
-(12, 'Nike For Today', '2024-08-24', 'Pending', 1, 2, '2024-08-24', '2024-08-30', 'now'),
-(13, 'Nike For Today', '2024-08-24', 'Pending', 1, 2, '2024-08-24', '2024-08-30', 'now'),
-(19, 'The Avengers Initiative', '2024-08-24', 'Pending', 9, 10, '2024-08-24', '2024-08-31', 'okay ');
 
 -- --------------------------------------------------------
 
@@ -161,11 +135,13 @@ CREATE TABLE `royalty_payments` (
 
 CREATE TABLE `sales` (
   `sale_id` int(11) NOT NULL,
-  `book_id` int(11) DEFAULT NULL,
-  `sale_date` date NOT NULL,
-  `quantity_sold` int(11) NOT NULL,
-  `sales_channel` varchar(100) DEFAULT NULL,
-  `revenue_generated` decimal(10,2) NOT NULL
+  `customer_name` varchar(255) NOT NULL,
+  `contact_info` varchar(255) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `order_date` date DEFAULT NULL,
+  `revenue` decimal(10,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `manuscript_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -179,18 +155,8 @@ CREATE TABLE `users` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(100) NOT NULL,
-  `role` enum('Author','Editor','Publisher') NOT NULL
+  `role` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `role`) VALUES
-(1, 'sanjay', 'sanjay@gmail.com', '$2y$10$g9BjRQb8VHWZjV9tosQBfeThM/l5BImtpLkQapH.mmv183uot1wS6', 'Author'),
-(2, 'sanjay', 'sanjay@gmail.com', '$2y$10$Bz5Advu.rEsjd0Y8Fo7C3egS57OmJ2Bkyy9uQhSZ15PHV5ZOxgrdu', 'Author'),
-(3, 'rashford', 'rashford@gmail.com', '$2y$10$2dfyFXtBwzcuLSGMih9Uuui24SkD5paZbHmu9K4uLB7RRA3VkgQZa', 'Author'),
-(4, 'martin', 'marto@gmail.com', '$2y$10$iSbkvdKEwo81EE43uMtykuPu1/V3G7dJSqcb8qBy6naP2RQ707ZC6', 'Author');
 
 --
 -- Indexes for dumped tables
@@ -256,7 +222,7 @@ ALTER TABLE `royalty_payments`
 --
 ALTER TABLE `sales`
   ADD PRIMARY KEY (`sale_id`),
-  ADD KEY `book_id` (`book_id`);
+  ADD KEY `sales_ibfk_1` (`manuscript_id`);
 
 --
 -- Indexes for table `users`
@@ -278,7 +244,7 @@ ALTER TABLE `books`
 -- AUTO_INCREMENT for table `contributor`
 --
 ALTER TABLE `contributor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `customers`
@@ -290,7 +256,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `manuscripts`
 --
 ALTER TABLE `manuscripts`
-  MODIFY `manuscript_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `manuscript_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -314,13 +280,13 @@ ALTER TABLE `royalty_payments`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `sale_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `sale_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Constraints for dumped tables
@@ -366,7 +332,7 @@ ALTER TABLE `royalty_payments`
 -- Constraints for table `sales`
 --
 ALTER TABLE `sales`
-  ADD CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscripts` (`manuscript_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
