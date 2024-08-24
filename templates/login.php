@@ -56,11 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form method="POST">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email" class="form-control" placeholder="Enter Email" id="email" name="email" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <input type="password" class="form-control" id="password" placeholder="Enter Password" name="password" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Login</button>
                 <p class="mt-3">Don't have an Account? <a href="register.php">Register</a></p>
