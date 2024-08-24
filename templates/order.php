@@ -53,7 +53,6 @@ $sales_result = $conn->query($sales_query);
                         <th>Contact Info</th>
                         <th>Manuscript Selected</th>
                         <th>Quantity Ordered</th>
-                        <th>Date of Order</th>
                         <th>Total Revenue</th>
                     </tr>
                 </thead>
@@ -64,7 +63,6 @@ $sales_result = $conn->query($sales_query);
                             <td><?php echo htmlspecialchars($row['contact_info']); ?></td>
                             <td><?php echo htmlspecialchars($row['manuscript_title']); ?></td>
                             <td><?php echo htmlspecialchars($row['quantity']); ?></td>
-                            <td><?php echo htmlspecialchars($row['order_date']); ?></td>
                             <td><?php echo htmlspecialchars($row['revenue']); ?></td>
                         </tr>
                     <?php endwhile; ?>
