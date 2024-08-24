@@ -19,9 +19,6 @@
           <a class="nav-link" href="add_contributor.php">Add Contributor</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="profile.php">Profile</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="submit_manuscript.php">Submit Manuscript</a>
         </li>
         <li class="nav-item">
